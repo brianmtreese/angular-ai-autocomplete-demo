@@ -1,0 +1,28 @@
+{
+  "name": "ai-gateway-server",
+  "version": "1.0.0",
+  "description": "AI Gateway server for autocomplete suggestions",
+  "main": "dist/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "cross-env NODE_OPTIONS=--no-deprecation node dist/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.6",
+    "cross-env": "^7.0.3",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}

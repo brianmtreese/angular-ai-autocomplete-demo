@@ -1,0 +1,42 @@
+<div class="form-group">
+  <label>{{ label() }}</label>
+  <textarea
+    [placeholder]="placeholder()"
+    [value]="value()"
+    [disabled]="disabled ? disabled() : false"
+    [readonly]="readonly ? readonly() : false"
+    (input)="onInput($event)"
+    (blur)="onBlur()"
+    (keydown)="onKeydown($event)"
+    rows="5"
+  ></textarea>
+  
+  @if (showSuggestion()) {
+    <div class="suggestion-panel" [class]="status()">
+      <div class="suggestion-content">
+        @if (status() === 'loading') {
+          <span>Thinking...</span>
+        } @else if (status() === 'ready' && suggestion()) {
+          <span>{{ suggestion() }}</span>
+        } @else if (status() === 'error') {
+          <span>AI unavailable (kept your input)</span>
+        }
+      </div>
+      
+      @if (status() === 'ready' && suggestion()) {
+        <div class="suggestion-actions">
+          <button 
+            class="btn-accept" 
+            (click)="accept()"
+            [disabled]="disabled ? disabled() : false"
+          >Accept</button>
+          <button 
+            class="btn-dismiss" 
+            (click)="dismiss()"
+            [disabled]="disabled ? disabled() : false"
+          >Dismiss</button>
+        </div>
+      }
+    </div>
+  }
+</div>
