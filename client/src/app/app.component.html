@@ -1,6 +1,5 @@
 <div class="card">
   <h1>Create Listing</h1>
-  
   <form>
     <div class="form-group">
       <label for="title">Title</label>
@@ -10,31 +9,14 @@
         [field]="formTree.title"
         placeholder="Enter listing title"
       />
-      @let titleField = formTree.title();
-      @let titleErrors = titleField.errors();
-      @if (titleField.touched() && titleErrors.length) {
-        @for (error of titleErrors; track error) {
-          <div class="error-message">{{ error.message }}</div>
-        }
-      }
     </div>
-
     <ai-suggest-field
       label="Description"
       placeholder="Describe your listing..."
       [context]="formTree.title().value()"
       [field]="formTree.description"
     />
-    @let descriptionField = formTree.description();
-    @let descriptionErrors = descriptionField.errors();
-    @if (descriptionField.touched() && descriptionErrors.length) {
-      @for (error of descriptionErrors; track error) {
-        <div class="error-message">{{ error.message }}</div>
-      }
-    }
-
   </form>
-
   <div class="preview-box">
     <h3>Payload Preview</h3>
     <pre>{{ payloadPreview() }}</pre>
