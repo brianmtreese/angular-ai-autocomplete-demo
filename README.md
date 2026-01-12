@@ -4,12 +4,15 @@ A minimal but production-shaped demo showcasing AI-powered autocomplete in Angul
 
 ## Features
 
-- **Preview-only suggestions**: AI suggestions never auto-write into the textarea
+- **Manual trigger**: User clicks the sparkle button to request AI suggestions (no auto-trigger)
+- **Preview-only suggestions**: AI suggestions appear below the textarea and never auto-write
 - **Explicit acceptance**: User must click "Accept" or press Tab to accept suggestions
-- **Smart debouncing**: Waits 1000ms after typing stops before requesting AI
-- **Request cancellation**: Typing again cancels in-flight requests
-- **Stale request handling**: Late results are discarded if user has typed since request started
-- **Graceful error handling**: Shows "AI unavailable" message and allows retry
+- **Request cancellation**: Clicking the button again cancels in-flight requests
+- **Stale request handling**: Late results are discarded if user has typed or clicked again since request started
+- **Context-aware**: Uses the listing title as context for generating description suggestions
+- **Rate limiting**: 10 requests per minute per IP address
+- **Request timeout**: 10-second timeout for AI requests
+- **Graceful error handling**: Shows "AI unavailable" message and preserves user input
 
 ## Setup
 
@@ -51,15 +54,20 @@ The server runs on `http://localhost:3000` and the client on `http://localhost:4
 
 ## Usage
 
-1. Enter a title for your listing
-2. Start typing a description (minimum 20 characters)
-3. After 1000ms of no typing, AI suggestions will appear below the textarea
-4. Press **Tab** or click **Accept** to append the suggestion
-5. Click **Dismiss** to clear the suggestion
+1. Enter a title for your listing (used as context for AI suggestions)
+2. Start typing a description in the textarea
+3. Once you've typed at least 20 characters, click the **sparkle button** (✨) next to the textarea to request an AI suggestion
+4. Wait for the suggestion to appear below the textarea (shows "Thinking..." while loading)
+5. Press **Tab** or click **Accept** to replace your current text with the suggestion
+6. Continue typing or click the button again to get a new suggestion
 
 ## API Endpoints
 
 - `GET /health` - Health check
 - `POST /api/suggest` - Get AI suggestion
   - Request: `{ context: string, text: string }`
+    - `context`: The listing title (used to provide context for the description)
+    - `text`: The current description text (minimum 20 characters)
   - Response: `{ suggestion: string }`
+  - Rate limit: 10 requests per minute per IP (returns 429 if exceeded)
+  - Timeout: 10 seconds (returns 504 if exceeded)
