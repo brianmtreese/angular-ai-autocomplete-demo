@@ -2,6 +2,8 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { getProvider } from './providers/index.js';
+import { rateLimiter } from './middleware/rateLimiter.js';
+import { withTimeout } from './utils/timeout.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,6 +11,9 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Trust proxy for accurate IP addresses (important for rate limiting)
+app.set('trust proxy', 1);
 
 // Initialize provider
 let provider;
@@ -25,8 +30,8 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Suggestion endpoint
-app.post('/api/suggest', async (req, res) => {
+// Suggestion endpoint with rate limiting
+app.post('/api/suggest', rateLimiter, async (req, res) => {
   try {
     const { context, text } = req.body;
 
@@ -49,8 +54,11 @@ app.post('/api/suggest', async (req, res) => {
       return res.json({ suggestion: '' });
     }
 
-    // Generate suggestion
-    const suggestion = await provider.generateSuggestion({ context, text });
+    // Generate suggestion with timeout (10 seconds)
+    const suggestion = await withTimeout(
+      provider.generateSuggestion({ context, text }),
+      10000
+    );
     
     res.json({ suggestion });
   } catch (error) {
@@ -58,7 +66,10 @@ app.post('/api/suggest', async (req, res) => {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : undefined;
     console.error('Error details:', { errorMessage, errorStack });
-    res.status(500).json({ 
+    
+    // Handle timeout errors specifically
+    const statusCode = errorMessage.includes('timeout') ? 504 : 500;
+    res.status(statusCode).json({ 
       error: errorMessage 
     });
   }
