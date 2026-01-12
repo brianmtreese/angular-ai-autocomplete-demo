@@ -1,5 +1,5 @@
-import { Component, input, model, computed, signal, InputSignal, inject } from '@angular/core';
-import { FormValueControl, ValidationError } from '@angular/forms/signals';
+import { Component, input, model, computed, signal, inject } from '@angular/core';
+import { FormValueControl } from '@angular/forms/signals';
 import { AiSuggestService } from './ai-suggest.service';
 
 type Status = 'idle' | 'loading' | 'ready' | 'error';
@@ -16,13 +16,7 @@ export class AiSuggestFieldComponent implements FormValueControl<string> {
   
   // FormValueControl implementation - required
   value = model<string>('');
-  
-  // FormValueControl optional inputs - will be bound by [field] directive
-  // These are optional properties that can be undefined
-  disabled?: InputSignal<boolean>;
-  readonly?: InputSignal<boolean>;
   touched = model<boolean>(false);
-  errors?: InputSignal<readonly ValidationError[]>;
 
   status = signal<Status>('idle');
   suggestion = signal<string>('');
@@ -31,24 +25,10 @@ export class AiSuggestFieldComponent implements FormValueControl<string> {
 
   private service = inject(AiSuggestService);
 
-  private isFieldDisabled = computed(() => 
-    (this.disabled?.() ?? false) || (this.readonly?.() ?? false)
-  );
-
   isSubmitDisabled = computed(() => 
-    this.isFieldDisabled() || 
     this.value().length < 20 || 
     this.status() === 'loading'
   );
-
-  constructor() {
-    // No auto-submit - user must click the magic button to request suggestions
-  }
-
-  showSuggestion = computed(() => {
-    const s = this.status();
-    return s !== 'idle';
-  });
 
   onInput(event: Event) {
     const target = event.target as HTMLTextAreaElement;
@@ -72,11 +52,6 @@ export class AiSuggestFieldComponent implements FormValueControl<string> {
     
     // Don't submit if empty or too short
     if (currentValue.length < 20) {
-      return;
-    }
-
-    // Don't trigger if disabled or readonly
-    if (this.isFieldDisabled()) {
       return;
     }
 

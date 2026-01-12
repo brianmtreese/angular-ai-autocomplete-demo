@@ -4,8 +4,6 @@
     <textarea
       [placeholder]="placeholder()"
       [value]="value()"
-      [disabled]="disabled ? disabled() : false"
-      [readonly]="readonly ? readonly() : false"
       (input)="onInput($event)"
       (blur)="onBlur()"
       (keydown)="onKeydown($event)"
@@ -24,7 +22,7 @@
     </button>
   </div>
   
-  @if (showSuggestion()) {
+  @if (status() !== 'idle') {
     <div class="suggestion-panel" [class]="status()">
       <div class="suggestion-content">
         @if (status() === 'loading') {
@@ -41,7 +39,6 @@
           <button 
             class="btn-accept" 
             (click)="accept()"
-            [disabled]="disabled ? disabled() : false"
           >Accept</button>
         </div>
       }

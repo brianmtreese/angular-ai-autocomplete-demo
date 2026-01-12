@@ -1,5 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
-import { form, Field, schema, debounce } from '@angular/forms/signals';
+import { form, Field, schema } from '@angular/forms/signals';
 import { AiSuggestFieldComponent } from './ai-suggest-field/ai-suggest-field.component';
 import { ListingModel } from './models/listing.schema';
 
@@ -15,9 +15,7 @@ export class AppComponent {
     description: '',
   });
 
-  private listingFormSchema = schema<ListingModel>((fields) => {
-    debounce(fields.description, 1000); // Debounce AI suggestions by 1000ms
-  });
+  private listingFormSchema = schema<ListingModel>(() => {});
 
   protected formTree = form(this.model, this.listingFormSchema);
 
