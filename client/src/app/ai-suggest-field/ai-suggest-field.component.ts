@@ -1,4 +1,4 @@
-import { Component, input, model, effect, computed, signal, InputSignal, inject } from '@angular/core';
+import { Component, input, model, computed, signal, InputSignal, inject } from '@angular/core';
 import { FormValueControl, ValidationError } from '@angular/forms/signals';
 import { AiSuggestService } from './ai-suggest.service';
 
@@ -26,7 +26,6 @@ export class AiSuggestFieldComponent implements FormValueControl<string> {
 
   status = signal<Status>('idle');
   suggestion = signal<string>('');
-  private dismissedForText = signal<string>('');
   private abortController: AbortController | null = null;
   private requestId = signal(0);
 
@@ -36,34 +35,14 @@ export class AiSuggestFieldComponent implements FormValueControl<string> {
     (this.disabled?.() ?? false) || (this.readonly?.() ?? false)
   );
 
+  isSubmitDisabled = computed(() => 
+    this.isFieldDisabled() || 
+    this.value().length < 20 || 
+    this.status() === 'loading'
+  );
+
   constructor() {
-    // Effect: value is already debounced at form level (1000ms)
-    effect(() => {
-      const currentValue = this.value();
-      const currentRequestId = this.requestId();
-
-      this.cancelPendingOperations();
-
-      // Reset if empty or too short
-      if (currentValue.length < 20) {
-        this.resetToIdle();
-        return;
-      }
-
-      // Check if dismissed for this exact text
-      if (currentValue === this.dismissedForText()) {
-        this.status.set('idle');
-        return;
-      }
-
-      // Don't trigger if disabled or readonly
-      if (this.isFieldDisabled()) {
-        return;
-      }
-
-      // Request suggestion (value is already debounced)
-      this.requestSuggestion(currentValue, currentRequestId);
-    });
+    // No auto-submit - user must click the magic button to request suggestions
   }
 
   showSuggestion = computed(() => {
@@ -88,6 +67,27 @@ export class AiSuggestFieldComponent implements FormValueControl<string> {
     }
   }
 
+  submitRequest() {
+    const currentValue = this.value();
+    
+    // Don't submit if empty or too short
+    if (currentValue.length < 20) {
+      return;
+    }
+
+    // Don't trigger if disabled or readonly
+    if (this.isFieldDisabled()) {
+      return;
+    }
+
+    // Cancel any pending operations
+    this.cancelPendingOperations();
+    
+    // Increment request ID and submit
+    this.requestId.update(id => id + 1);
+    this.requestSuggestion(currentValue, this.requestId());
+  }
+
   accept() {
     const suggestion = this.suggestion();
     if (suggestion.length === 0) return;
@@ -96,13 +96,6 @@ export class AiSuggestFieldComponent implements FormValueControl<string> {
     this.value.set(suggestion);
 
     this.resetToIdle();
-    this.dismissedForText.set('');
-  }
-
-  dismiss() {
-    this.cancelPendingOperations();
-    this.resetToIdle();
-    this.dismissedForText.set(this.value());
   }
 
   private cancelPendingOperations() {
@@ -119,8 +112,7 @@ export class AiSuggestFieldComponent implements FormValueControl<string> {
 
   private isStaleRequest(requestId: number, text: string): boolean {
     return this.requestId() !== requestId || 
-           this.value() !== text || 
-           text === this.dismissedForText();
+           this.value() !== text;
   }
 
   private async requestSuggestion(text: string, requestId: number) {

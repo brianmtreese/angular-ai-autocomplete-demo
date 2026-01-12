@@ -1,15 +1,28 @@
 <div class="form-group">
   <label>{{ label() }}</label>
-  <textarea
-    [placeholder]="placeholder()"
-    [value]="value()"
-    [disabled]="disabled ? disabled() : false"
-    [readonly]="readonly ? readonly() : false"
-    (input)="onInput($event)"
-    (blur)="onBlur()"
-    (keydown)="onKeydown($event)"
-    rows="5"
-  ></textarea>
+  <div class="textarea-wrapper">
+    <textarea
+      [placeholder]="placeholder()"
+      [value]="value()"
+      [disabled]="disabled ? disabled() : false"
+      [readonly]="readonly ? readonly() : false"
+      (input)="onInput($event)"
+      (blur)="onBlur()"
+      (keydown)="onKeydown($event)"
+      rows="5"
+    ></textarea>
+    <button
+      type="button"
+      class="magic-button"
+      (click)="submitRequest()"
+      [disabled]="isSubmitDisabled()"
+      [title]="value().length < 20 ? 'Enter at least 20 characters' : 'Get AI suggestion'"
+    >
+      <svg width="18" height="18" fill="currentColor" focusable="false" aria-hidden="true">
+        <use href="assets/icons/sparkle.svg#sparkle-icon"/>
+      </svg>
+    </button>
+  </div>
   
   @if (showSuggestion()) {
     <div class="suggestion-panel" [class]="status()">
@@ -30,11 +43,6 @@
             (click)="accept()"
             [disabled]="disabled ? disabled() : false"
           >Accept</button>
-          <button 
-            class="btn-dismiss" 
-            (click)="dismiss()"
-            [disabled]="disabled ? disabled() : false"
-          >Dismiss</button>
         </div>
       }
     </div>
