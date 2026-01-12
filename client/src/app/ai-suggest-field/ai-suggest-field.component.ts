@@ -92,9 +92,8 @@ export class AiSuggestFieldComponent implements FormValueControl<string> {
     const suggestion = this.suggestion();
     if (suggestion.length === 0) return;
 
-    const currentValue = this.value();
-    const spacing = currentValue.length > 0 && !currentValue.endsWith(' ') ? ' ' : '';
-    this.value.set(currentValue + spacing + suggestion);
+    // Replace the entire current value with the suggestion
+    this.value.set(suggestion);
 
     this.resetToIdle();
     this.dismissedForText.set('');
