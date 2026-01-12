@@ -119,7 +119,9 @@ export class AiSuggestFieldComponent implements FormValueControl<string> {
   }
 
   private isStaleRequest(requestId: number, text: string): boolean {
-    return this.requestId() !== requestId || this.value() !== text;
+    return this.requestId() !== requestId || 
+           this.value() !== text || 
+           text === this.dismissedForText();
   }
 
   private async requestSuggestion(text: string, requestId: number) {
