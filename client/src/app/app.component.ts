@@ -6,8 +6,7 @@ import { ListingModel } from './models/listing.schema';
 @Component({
   selector: 'app-root',
   imports: [AiSuggestFieldComponent, Field],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  templateUrl: './app.component.html'
 })
 export class AppComponent {
   private model = signal<ListingModel>({

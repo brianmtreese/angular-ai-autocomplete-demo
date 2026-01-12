@@ -1,86 +1,174 @@
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+}
+
+html {
+  background-color: hsl(220 18% 10%);
+  color: white;
+  height: 100%;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background: #f5f5f5;
-  color: #333;
-  line-height: 1.6;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  height: 100%;
   padding: 2rem;
 }
 
+/* Shared Form Styles */
+
+form {
+  margin-bottom: 2rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: white;
+}
+
+input {
+  padding: 0.625rem 0.75rem;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #1e293b;
+  color: white;
+  transition: all 0.15s ease-in-out;
+  outline: none;
+  width: 100%;
+}
+
+input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+input:hover:not(:focus) {
+  border-color: #9ca3af;
+}
+
+input::placeholder {
+  color: #9ca3af;
+}
+
+textarea {
+  padding: 0.625rem 0.75rem;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #1e293b;
+  color: white;
+  transition: all 0.15s ease-in-out;
+  outline: none;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+  width: 100%;
+}
+
+textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+textarea:hover:not(:focus) {
+  border-color: #9ca3af;
+}
+
+textarea::placeholder {
+  color: #9ca3af;
+}
+
+button {
+  padding: 0.75rem 1.5rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+button:hover:not(:disabled) {
+  background: #2563eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+button:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
 .card {
-  background: white;
+  background: transparent;
   border-radius: 8px;
   padding: 2rem;
   max-width: 800px;
   margin: 0 auto;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card h1 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: white;
 }
 
 .form-group {
   margin-bottom: 1.5rem;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #555;
-}
-
-input[type="text"],
-textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-family: inherit;
-}
-
-input[type="text"]:focus,
-textarea:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-}
-
-textarea {
-  min-height: 120px;
-  resize: vertical;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .suggestion-panel {
   margin-top: 0.5rem;
   padding: 0.75rem;
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 4px;
-  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-size: 0.875rem;
 }
 
 .suggestion-panel.loading {
-  border-color: #007bff;
-  background: #e7f3ff;
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
 }
 
 .suggestion-panel.ready {
-  border-color: #28a745;
-  background: #d4edda;
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
 }
 
 .suggestion-panel.error {
-  border-color: #dc3545;
-  background: #f8d7da;
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
 }
 
 .suggestion-content {
   margin-bottom: 0.75rem;
-  color: #333;
+  color: white;
 }
 
 .suggestion-actions {
@@ -88,68 +176,34 @@ textarea {
   gap: 0.5rem;
 }
 
-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .btn-accept {
-  background: #28a745;
+  background: #10b981;
   color: white;
 }
 
 .btn-accept:hover:not(:disabled) {
-  background: #218838;
-}
-
-.btn-dismiss {
-  background: #6c757d;
-  color: white;
-}
-
-.btn-dismiss:hover:not(:disabled) {
-  background: #5a6268;
+  background: #059669;
 }
 
 .preview-box {
   margin-top: 2rem;
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 4px;
-  border: 1px solid #dee2e6;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .preview-box h3 {
-  margin-bottom: 0.5rem;
+  margin: 0 0 1rem 0;
   font-size: 1rem;
-  color: #555;
+  font-weight: 600;
+  color: white;
 }
 
 .preview-box pre {
-  background: white;
   padding: 1rem;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow-x: auto;
   font-size: 0.85rem;
-  color: #333;
-}
-
-.error-message {
-  color: #dc3545;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-}
-
-input[type="text"].ng-invalid.ng-touched,
-textarea.ng-invalid.ng-touched {
-  border-color: #dc3545;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
