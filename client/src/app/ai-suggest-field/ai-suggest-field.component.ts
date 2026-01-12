@@ -37,7 +37,7 @@ export class AiSuggestFieldComponent implements FormValueControl<string> {
   );
 
   constructor() {
-    // Effect: value is already debounced at form level (400ms)
+    // Effect: value is already debounced at form level (1000ms)
     effect(() => {
       const currentValue = this.value();
       const currentRequestId = this.requestId();

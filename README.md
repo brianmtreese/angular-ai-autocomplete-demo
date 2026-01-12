@@ -53,7 +53,7 @@ The server runs on `http://localhost:3000` and the client on `http://localhost:4
 
 1. Enter a title for your listing
 2. Start typing a description (minimum 20 characters)
-3. After 400ms of no typing, AI suggestions will appear below the textarea
+3. After 1000ms of no typing, AI suggestions will appear below the textarea
 4. Press **Tab** or click **Accept** to append the suggestion
 5. Click **Dismiss** to clear the suggestion
 
