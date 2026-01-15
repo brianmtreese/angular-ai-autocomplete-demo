@@ -1,11 +1,15 @@
 import { Component, computed, signal } from '@angular/core';
-import { form, Field, schema } from '@angular/forms/signals';
+import { form, Field } from '@angular/forms/signals';
 import { AiSuggestFieldComponent } from './ai-suggest-field/ai-suggest-field.component';
-import { ListingModel } from './models/listing.schema';
+
+interface ListingModel {
+  title: string;
+  description: string;
+}
 
 @Component({
   selector: 'app-root',
-  imports: [AiSuggestFieldComponent, Field],
+  imports: [Field, AiSuggestFieldComponent],
   templateUrl: './app.component.html'
 })
 export class AppComponent {
@@ -14,9 +18,7 @@ export class AppComponent {
     description: '',
   });
 
-  private listingFormSchema = schema<ListingModel>(() => {});
-
-  protected formTree = form(this.model, this.listingFormSchema);
+  protected formTree = form(this.model);
 
   protected payloadPreview = computed(() => {
     const formValue = {

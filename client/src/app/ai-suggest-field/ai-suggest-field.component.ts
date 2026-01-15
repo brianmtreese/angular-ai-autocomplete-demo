@@ -12,66 +12,38 @@ type Status = 'idle' | 'loading' | 'ready' | 'error';
 export class AiSuggestFieldComponent implements FormValueControl<string> {
   label = input.required<string>();
   placeholder = input<string>('');
-  context = input<string>('');
-  
-  // FormValueControl implementation - required
   value = model<string>('');
   touched = model<boolean>(false);
 
-  status = signal<Status>('idle');
-  suggestion = signal<string>('');
+  protected status = signal<Status>('idle');
+  protected suggestion = signal<string>('');
+  
   private abortController: AbortController | null = null;
-  private requestId = signal(0);
 
   private service = inject(AiSuggestService);
 
-  isSubmitDisabled = computed(() => 
-    this.value().length < 20 || 
-    this.status() === 'loading'
-  );
-
-  onInput(event: Event) {
+  protected onInput(event: Event) {
     const target = event.target as HTMLTextAreaElement;
     this.value.set(target.value);
-    this.requestId.update(id => id + 1);
   }
 
-  onBlur() {
+  protected onBlur() {
     this.touched.set(true);
   }
 
-  onKeydown(event: KeyboardEvent) {
-    if (event.key === 'Tab' && this.status() === 'ready' && this.suggestion().length > 0) {
-      event.preventDefault();
-      this.accept();
-    }
-  }
-
-  submitRequest() {
-    const currentValue = this.value();
-    
-    // Don't submit if empty or too short
-    if (currentValue.length < 20) {
-      return;
-    }
-
-    // Cancel any pending operations
+  protected submitRequest() {
     this.cancelPendingOperations();
-    
-    // Increment request ID and submit
-    this.requestId.update(id => id + 1);
-    this.requestSuggestion(currentValue, this.requestId());
+    this.requestSuggestion(this.value());
   }
 
-  accept() {
-    const suggestion = this.suggestion();
-    if (suggestion.length === 0) return;
-
-    // Replace the entire current value with the suggestion
-    this.value.set(suggestion);
-
+  protected accept() {
+    this.value.set(this.suggestion());
     this.resetToIdle();
   }
+
+  protected isSubmitDisabled = computed(() =>
+    this.status() === 'loading'
+  );
 
   private cancelPendingOperations() {
     if (this.abortController) {
@@ -85,22 +57,15 @@ export class AiSuggestFieldComponent implements FormValueControl<string> {
     this.suggestion.set('');
   }
 
-  private isStaleRequest(requestId: number, text: string): boolean {
-    return this.requestId() !== requestId || 
-           this.value() !== text;
-  }
-
-  private async requestSuggestion(text: string, requestId: number) {
+  private async requestSuggestion(text: string) {
     this.abortController = new AbortController();
     this.status.set('loading');
 
     try {
       const response = await this.service.suggest(
-        { context: this.context(), text },
+        text,
         this.abortController.signal
       );
-
-      if (this.isStaleRequest(requestId, text)) return;
 
       if (response.suggestion?.length > 0) {
         this.suggestion.set(response.suggestion);
@@ -109,7 +74,7 @@ export class AiSuggestFieldComponent implements FormValueControl<string> {
         this.resetToIdle();
       }
     } catch (error: any) {
-      if (error.name === 'AbortError' || this.isStaleRequest(requestId, text)) {
+      if (error.name === 'AbortError') {
         return;
       }
       this.status.set('error');

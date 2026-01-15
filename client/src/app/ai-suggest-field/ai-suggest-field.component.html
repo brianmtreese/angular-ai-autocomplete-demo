@@ -6,7 +6,6 @@
       [value]="value()"
       (input)="onInput($event)"
       (blur)="onBlur()"
-      (keydown)="onKeydown($event)"
       rows="5"
     ></textarea>
     <button
@@ -14,7 +13,7 @@
       class="magic-button"
       (click)="submitRequest()"
       [disabled]="isSubmitDisabled()"
-      [title]="value().length < 20 ? 'Enter at least 20 characters' : 'Get AI suggestion'"
+      title="Get AI suggestion"
     >
       <svg width="18" height="18" fill="currentColor" focusable="false" aria-hidden="true">
         <use href="assets/icons/sparkle.svg#sparkle-icon"/>

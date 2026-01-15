@@ -7,7 +7,7 @@ export class GroqProvider implements AiProvider {
     private readonly model: string
   ) {}
 
-  async generateSuggestion(input: { context: string; text: string }) {
+  async generateSuggestion(input: { text: string }) {
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -16,7 +16,7 @@ export class GroqProvider implements AiProvider {
       },
       body: JSON.stringify({
         model: this.model,
-        messages: buildMessages(input.context, input.text),
+        messages: buildMessages(input.text),
         temperature: 0.4,
         max_tokens: 90
       })

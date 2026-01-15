@@ -6,12 +6,10 @@ A minimal but production-shaped demo showcasing AI-powered autocomplete in Angul
 
 - **Manual trigger**: User clicks the sparkle button to request AI suggestions (no auto-trigger)
 - **Preview-only suggestions**: AI suggestions appear below the textarea and never auto-write
-- **Explicit acceptance**: User must click "Accept" or press Tab to accept suggestions
-- **Request cancellation**: Clicking the button again cancels in-flight requests
-- **Stale request handling**: Late results are discarded if user has typed or clicked again since request started
-- **Context-aware**: Uses the listing title as context for generating description suggestions
+- **Explicit acceptance**: User must click "Accept" to accept suggestions
+- **Request cancellation**: Clicking the button again cancels in-flight requests using AbortController
 - **Rate limiting**: 10 requests per minute per IP address
-- **Request timeout**: 10-second timeout for AI requests
+- **Request timeout**: 10-second timeout for AI provider calls (15-second HTTP timeout)
 - **Graceful error handling**: Shows "AI unavailable" message and preserves user input
 
 ## Setup
@@ -34,8 +32,11 @@ Create a `server/.env` file with your Groq API key:
 ```
 GROQ_API_KEY=your_groq_api_key_here
 GROQ_MODEL=llama-3.1-8b-instant
-PORT=3000
+PORT=3500
+AI_PROVIDER=groq
 ```
+
+**Note:** The `PORT` should be set to `3500` to match the client proxy configuration. If you use a different port, update `client/proxy.conf.json` and `client/vite.config.ts` accordingly.
 
 **Getting a Groq API Key:**
 1. Sign up at https://console.groq.com
@@ -50,24 +51,22 @@ Run both server and client together:
 npm run dev
 ```
 
-The server runs on `http://localhost:3000` and the client on `http://localhost:4200`.
+The server runs on `http://localhost:3500` (or the port specified in `.env`) and the client runs on the default Angular dev server port (typically `http://localhost:4200`). The client proxy configuration forwards `/api` requests to the server.
 
 ## Usage
 
-1. Enter a title for your listing (used as context for AI suggestions)
-2. Start typing a description in the textarea
-3. Once you've typed at least 20 characters, click the **sparkle button** (✨) next to the textarea to request an AI suggestion
-4. Wait for the suggestion to appear below the textarea (shows "Thinking..." while loading)
-5. Press **Tab** or click **Accept** to replace your current text with the suggestion
-6. Continue typing or click the button again to get a new suggestion
+1. Start typing a description in the textarea
+2. Click the **sparkle button** (✨) next to the textarea to request an AI suggestion
+3. Wait for the suggestion to appear below the textarea (shows "Thinking..." while loading)
+4. Click **Accept** to replace your current text with the suggestion
+5. Continue typing or click the button again to get a new suggestion
 
 ## API Endpoints
 
 - `GET /health` - Health check
 - `POST /api/suggest` - Get AI suggestion
-  - Request: `{ context: string, text: string }`
-    - `context`: The listing title (used to provide context for the description)
-    - `text`: The current description text (minimum 20 characters)
+  - Request: `{ text: string }`
+    - `text`: The current description text to continue
   - Response: `{ suggestion: string }`
   - Rate limit: 10 requests per minute per IP (returns 429 if exceeded)
-  - Timeout: 10 seconds (returns 504 if exceeded)
+  - Timeout: 10 seconds for AI provider call, 15 seconds total HTTP timeout (returns 504 if exceeded)

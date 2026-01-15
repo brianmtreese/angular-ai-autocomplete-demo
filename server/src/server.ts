@@ -32,8 +32,15 @@ app.get('/health', (req, res) => {
 
 // Suggestion endpoint with rate limiting
 app.post('/api/suggest', rateLimiter, async (req, res) => {
+  // Set timeout to prevent hanging connections
+  req.setTimeout(15000, () => {
+    if (!res.headersSent) {
+      res.status(504).json({ error: 'Request timeout' });
+    }
+  });
+
   try {
-    const { context, text } = req.body;
+    const { text } = req.body;
 
     // Validate payload exists
     if (!req.body || typeof req.body !== 'object') {
@@ -43,35 +50,35 @@ app.post('/api/suggest', rateLimiter, async (req, res) => {
     }
 
     // Validate payload types
-    if (typeof context !== 'string' || typeof text !== 'string') {
+    if (typeof text !== 'string') {
       return res.status(400).json({ 
-        error: 'Invalid payload: context and text must be strings' 
+        error: 'Invalid payload: text must be a string' 
       });
-    }
-
-    // Minimum chars guardrail
-    if (text.length < 20) {
-      return res.json({ suggestion: '' });
     }
 
     // Generate suggestion with timeout (10 seconds)
     const suggestion = await withTimeout(
-      provider.generateSuggestion({ context, text }),
+      provider.generateSuggestion({ text }),
       10000
     );
     
-    res.json({ suggestion });
+    if (!res.headersSent) {
+      res.json({ suggestion });
+    }
   } catch (error) {
     console.error('Error generating suggestion:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : undefined;
     console.error('Error details:', { errorMessage, errorStack });
     
-    // Handle timeout errors specifically
-    const statusCode = errorMessage.includes('timeout') ? 504 : 500;
-    res.status(statusCode).json({ 
-      error: errorMessage 
-    });
+    // Only send response if headers haven't been sent
+    if (!res.headersSent) {
+      // Handle timeout errors specifically
+      const statusCode = errorMessage.includes('timeout') ? 504 : 500;
+      res.status(statusCode).json({ 
+        error: errorMessage 
+      });
+    }
   }
 });
 

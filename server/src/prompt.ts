@@ -1,11 +1,5 @@
-import type { SuggestionRequest } from './providers/provider.js';
-
-export function buildPrompt(request: SuggestionRequest): string {
-  const { context, text } = request;
-  
+export function buildPrompt(text: string): string {
   return `You are helping a user write a description for a listing.
-
-Context: ${context}
 
 Current text: "${text}"
 
@@ -18,8 +12,8 @@ Continue the description naturally. Rules:
 Continuation:`;
 }
 
-export function buildMessages(context: string, text: string): Array<{ role: string; content: string }> {
-  const prompt = buildPrompt({ context, text });
+export function buildMessages(text: string): Array<{ role: string; content: string }> {
+  const prompt = buildPrompt(text);
   return [
     {
       role: 'user',

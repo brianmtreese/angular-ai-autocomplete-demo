@@ -1,5 +1,4 @@
 export interface SuggestionRequest {
-  context: string;
   text: string;
 }
 
