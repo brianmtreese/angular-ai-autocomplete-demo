@@ -1,6 +1,6 @@
-# AI-powered Autocomplete in Angular
+# AI-powered Suggestion Field in Angular
 
-A minimal but production-shaped demo showcasing AI-powered autocomplete in Angular without wrecking UX.
+A minimal but production-shaped demo showcasing AI-powered suggestion field in Angular without wrecking UX.
 
 ## Features
 
@@ -70,3 +70,6 @@ The server runs on `http://localhost:3500` (or the port specified in `.env`) and
   - Response: `{ suggestion: string }`
   - Rate limit: 10 requests per minute per IP (returns 429 if exceeded)
   - Timeout: 10 seconds for AI provider call, 15 seconds total HTTP timeout (returns 504 if exceeded)
+
+  ## Related Resources
+  🎥 YouTube Tutorial: https://youtu.be/g5LLwr5YTUg
