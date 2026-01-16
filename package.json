@@ -1,7 +1,7 @@
 {
-  "name": "ai-autocomplete-demo",
+  "name": "ai-suggestion-textbox-demo",
   "version": "1.0.0",
-  "description": "AI-powered autocomplete in Angular without wrecking UX",
+  "description": "AI-powered suggestion textbox in Angular without wrecking UX",
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--no-deprecation concurrently \"npm run dev:server\" \"npm run dev:client\"",
